@@ -26,47 +26,44 @@ afterEach(() => {
 });
 
 describe("Happy path movie test", () => {
-    test("Rezerv standard seat", async () => {
-        await clickElement(page, locatorChoiceOfDay);
-        await clickElement(page, locatorChoiceHall);
-        await clickElement(page, locatorFirstFreeSeat);
-        await clickElement(page, locatorButtonOfRezrv);
+    const testCases = [
+        {
+            name: "Standard seat",
+            hall: locatorChoiceHall,
+            seat: locatorFirstFreeSeat
+        },
+        {
+            name: "VIP seat",
+            hall: locatorChoiceHallVip,
+            seat: locatorFirstFreeSeatVip
+        }
+    ];
 
-        const actualTextOfRezerv = await getText(page, locatorTextOfRezerv);
-        const expectedTextOfRezerv = "Вы выбрали билеты:";
+    test.each(testCases)(
+        "Rezerv $name",
+        async ({ hall, seat }) => {
+            await clickElement(page, locatorChoiceOfDay);
+            await clickElement(page, hall);
+            await clickElement(page, seat);
+            await clickElement(page, locatorButtonOfRezrv);
 
-        await expect(actualTextOfRezerv).toContain(expectedTextOfRezerv);
+            const actualTextOfRezerv = await getText(page, locatorTextOfRezerv);
+            const expectedTextOfRezerv = "Вы выбрали билеты:";
 
-        await clickElement(page, locatorGetResrvCod);
+            await expect(actualTextOfRezerv).toContain(expectedTextOfRezerv);
 
-        const actualTextCheckTicket = await getText(
-            page,
-            locatorTextCheckTicket
-        );
-        const expectedTextCheckTicket = "Электронный билет";
+            await clickElement(page, locatorGetResrvCod);
 
-        await expect(actualTextCheckTicket).toContain(expectedTextCheckTicket);
-    }, 20000);
+            const actualTextCheckTicket = await getText(
+                page,
+                locatorTextCheckTicket
+            );
+            const expectedTextCheckTicket = "Электронный билет";
 
-    test("Rezerv VIP seat", async () => {
-        await clickElement(page, locatorChoiceOfDay);
-        await clickElement(page, locatorChoiceHallVip);
-        await clickElement(page, locatorFirstFreeSeatVip);
-        await clickElement(page, locatorButtonOfRezrv);
-
-        const actualTextOfRezerv = await getText(page, locatorTextOfRezerv);
-        const expectedTextOfRezerv = "Вы выбрали билеты:";
-
-        await expect(actualTextOfRezerv).toContain(expectedTextOfRezerv);
-
-        await clickElement(page, locatorGetResrvCod);
-
-        const actualTextCheckTicket = await getText(
-            page,
-            locatorTextCheckTicket
-        );
-        const expectedTextCheckTicket = "Электронный билет";
-
-        await expect(actualTextCheckTicket).toContain(expectedTextCheckTicket);
-    }, 20000);
+            await expect(actualTextCheckTicket).toContain(
+                expectedTextCheckTicket
+            );
+        },
+        20000
+    );
 });
