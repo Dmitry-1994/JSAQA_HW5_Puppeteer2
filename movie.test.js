@@ -7,13 +7,17 @@ const locatorChoiceOfDay = "a:nth-child(2)";
 const locatorChoiceHall = "[data-seance-id='217']";
 const locatorFirstFreeSeat =
     ".buying-scheme__chair.buying-scheme__chair_standart:not(.buying-scheme__chair_taken)";
-
 const locatorButtonOfRezrv = ".acceptin-button";
 const locatorTextOfRezerv = ".ticket__check-title";
+const locatorGetResrvCod = ".acceptin-button";
+const locatorTextCheckTicket = ".ticket__check-title";
+
+const locatorChoiceHallVip = "[data-seance-id='225']";
+const locatorFirstFreeSeatVip =
+    ".buying-scheme__chair.buying-scheme__chair_vip:not(.buying-scheme__chair_taken)";
 
 beforeEach(async () => {
     page = await browser.newPage();
-    //await page.setDefaultTimeout(30000);
     await openStartPage(page, dashBoardPage);
 });
 
@@ -24,40 +28,45 @@ afterEach(() => {
 describe("Happy path movie test", () => {
     test("Rezerv standard seat", async () => {
         await clickElement(page, locatorChoiceOfDay);
-
         await clickElement(page, locatorChoiceHall);
-
         await clickElement(page, locatorFirstFreeSeat);
-
         await clickElement(page, locatorButtonOfRezrv);
 
-        const actual = await getText(page, locatorTextOfRezerv);
-        const expected = "Вы выбрали билеты:";
+        const actualTextOfRezerv = await getText(page, locatorTextOfRezerv);
+        const expectedTextOfRezerv = "Вы выбрали билеты:";
 
-        //Без кастомных команд (открытие)
-        // await page.waitForSelector(locatorChoiceOfDay, { visible: true });
-        // await page.click(locatorChoiceOfDay);
+        await expect(actualTextOfRezerv).toContain(expectedTextOfRezerv);
 
-        // await page.waitForSelector(locatorChoiceHall, { visible: true });
-        // await page.click(locatorChoiceHall);
+        await clickElement(page, locatorGetResrvCod);
 
-        // await page.waitForSelector(locatorFirstFreeSeat, { visible: true });
-        // await page.click(locatorFirstFreeSeat);
+        const actualTextCheckTicket = await getText(
+            page,
+            locatorTextCheckTicket
+        );
+        const expectedTextCheckTicket = "Электронный билет";
 
-        // await page.waitForSelector(locatorButtonOfRezrv, { visible: true });
-        // await page.click(locatorButtonOfRezrv);
+        await expect(actualTextCheckTicket).toContain(expectedTextCheckTicket);
+    }, 20000);
 
-        // await page.waitForSelector(locatorTextOfRezerv, { visible: true });
+    test("Rezerv VIP seat", async () => {
+        await clickElement(page, locatorChoiceOfDay);
+        await clickElement(page, locatorChoiceHallVip);
+        await clickElement(page, locatorFirstFreeSeatVip);
+        await clickElement(page, locatorButtonOfRezrv);
 
-        // const actual = await page.$eval(
-        //     locatorTextOfRezerv,
-        //     link => link.textContent
-        // );
-        // const expected = "Вы выбрали билеты:";
-        //Без кастомных команд (закрытие)
+        const actualTextOfRezerv = await getText(page, locatorTextOfRezerv);
+        const expectedTextOfRezerv = "Вы выбрали билеты:";
 
-        expect(actual).toContain(expected);
-    }, 60000);
+        await expect(actualTextOfRezerv).toContain(expectedTextOfRezerv);
 
-    //test("Rezerv VIP seat", async () => {}, 1000);
+        await clickElement(page, locatorGetResrvCod);
+
+        const actualTextCheckTicket = await getText(
+            page,
+            locatorTextCheckTicket
+        );
+        const expectedTextCheckTicket = "Электронный билет";
+
+        await expect(actualTextCheckTicket).toContain(expectedTextCheckTicket);
+    }, 20000);
 });
