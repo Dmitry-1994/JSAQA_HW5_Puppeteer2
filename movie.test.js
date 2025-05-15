@@ -11,10 +11,10 @@ const locatorButtonOfRezrv = ".acceptin-button";
 const locatorTextOfRezerv = ".ticket__check-title";
 const locatorGetResrvCod = ".acceptin-button";
 const locatorTextCheckTicket = ".ticket__check-title";
-
 const locatorChoiceHallVip = "[data-seance-id='225']";
 const locatorFirstFreeSeatVip =
     ".buying-scheme__chair.buying-scheme__chair_vip:not(.buying-scheme__chair_taken)";
+const locatorFirstBusySeat = ".buying-scheme__chair_taken";
 
 beforeEach(async () => {
     page = await browser.newPage();
@@ -66,4 +66,39 @@ describe("Happy path movie test", () => {
         },
         20000
     );
+});
+
+describe.only("Sad path movie test", () => {
+    test("Reservation of a purchased seat", async () => {
+        await clickElement(page, locatorChoiceOfDay);
+        await clickElement(page, locatorChoiceHall);
+        await clickElement(page, locatorFirstFreeSeat);
+        await clickElement(page, locatorButtonOfRezrv);
+
+        const actualTextOfRezerv = await getText(page, locatorTextOfRezerv);
+        const expectedTextOfRezerv = "Вы выбрали билеты:";
+
+        await expect(actualTextOfRezerv).toContain(expectedTextOfRezerv);
+
+        await clickElement(page, locatorGetResrvCod);
+
+        const actualTextCheckTicket = await getText(
+            page,
+            locatorTextCheckTicket
+        );
+        const expectedTextCheckTicket = "Электронный билет";
+
+        await expect(actualTextCheckTicket).toContain(expectedTextCheckTicket);
+
+        await openStartPage(page, dashBoardPage);
+        await clickElement(page, locatorChoiceOfDay);
+        await clickElement(page, locatorChoiceHall);
+        await clickElement(page, locatorFirstBusySeat);
+
+        const isDisabled = await page.$eval(locatorButtonOfRezrv, link =>
+            link.getAttribute("disabled")
+        );
+
+        await expect(isDisabled).toBe("true");
+    }, 20000);
 });
