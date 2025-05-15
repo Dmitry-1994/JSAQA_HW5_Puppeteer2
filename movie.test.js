@@ -68,7 +68,7 @@ describe("Happy path movie test", () => {
     );
 });
 
-describe.only("Sad path movie test", () => {
+describe("Sad path movie test", () => {
     test("Reservation of a purchased seat", async () => {
         await clickElement(page, locatorChoiceOfDay);
         await clickElement(page, locatorChoiceHall);
